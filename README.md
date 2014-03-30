@@ -48,3 +48,9 @@ events for that image collection. Valid only for postponed images.
 
 Fetch images for every created instance of Kist Postimg plugin. Useful when you
 do lots of layout reflowing and want to check and fetch every image collection.
+
+## Caveats
+
+For postponed images to load properly (only visible in viewport), some dimension 
+(height) needs to be set for them, otherwise browser will try to download every
+image in collection.
