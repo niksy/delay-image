@@ -1,4 +1,4 @@
-/* kist-postimg 0.0.0 - Load images via postpone or lazyload method. | Author: Ivan Nikolić, 2014 | License: MIT */
+/* kist-postimg 0.1.0 - Load images via postpone or lazyload method. | Author: Ivan Nikolić, 2014 | License: MIT */
 ;(function ( $, window, document, undefined ) {
 
 	var o                    = {};
