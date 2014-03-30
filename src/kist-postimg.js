@@ -152,46 +152,23 @@
 	 */
 	o.parseImages = function ( arrImages ) {
 
-		var arrPictureParse;
-		var arrStandardParse;
+		arrImages.each($.proxy( function ( index, element ) {
 
-		// Filter images for Picture parser
-		arrPictureParse = arrImages.filter(function () { return typeof($(this).data('picture')) != 'undefined'; });
+			var imageEl = $(element);
 
-		// Filter images for standard parser
-		arrStandardParse = arrImages.filter(function () { return $(this).is('img') === true; });
+			$.loadImage( imageEl.data('src') ).done($.proxy( function () {
 
-		if ( arrPictureParse.length !== 0 ) {
+				imageEl
+					.attr('src', imageEl.data('src'))
+					.attr('alt', imageEl.data('alt'))
+					.removeAttr('width').removeAttr('height')
+					.addClass( pluginClassNamespace + '--is-loaded' );
 
-			if ( !window.hasOwnProperty('Picture') ) {
-				throw new Error('Picture parser is not available.');
-			}
-
-			// Parse images with picture parser
-			window.Picture.parse( arrPictureParse.get() );
-
-		} else if ( arrStandardParse.length !== 0 ) {
-
-			// Parse images with standard parser
-			arrStandardParse.each($.proxy( function (index, element) {
-
-				var imageEl = $(element);
-
-				$.loadImage( imageEl.data('src') ).done($.proxy( function () {
-
-					imageEl
-						.attr('src', imageEl.data('src'))
-						.attr('alt', imageEl.data('alt'))
-						.removeAttr('width').removeAttr('height')
-						.addClass( pluginClassNamespace + '--is-loaded' );
-
-					this.domRefs.imagesEl = this.domRefs.imagesEl.not( imageEl );
-
-				}, this));
+				this.domRefs.imagesEl = this.domRefs.imagesEl.not( imageEl );
 
 			}, this));
 
-		}
+		}, this));
 
 	};
 
