@@ -241,23 +241,28 @@
 	$.extend( PluginModule.prototype, o );
 
 	$[ pluginName ]           = {};
-	$[ pluginName ].instances = {};
+	$[ pluginName ].instances = [];
 	$[ pluginName ].defaults  = PluginModule.prototype.defaults;
 
+	/**
+	 * Fetch images for all plugin instances
+	 *
+	 * @return {Ui}
+	 */
 	$[ pluginName ].fetchAllImages = function () {
 
-		for ( var i in this.instances ) {
-			if ( this.instances.hasOwnProperty( i ) ) {
-				this.instances[i].fetchPostponedImages();
-				this.instances[i].fetchLazyLoadedImages();
-			}
-		}
+		$.each( this.instances, function ( index, instance ) {
+
+			instance.fetchPostponedImages();
+			instance.fetchLazyLoadedImages();
+
+		});
 
 	};
 
 	$.fn[ pluginName ] = function ( options ) {
 
-		$[ pluginName ].instances[ 'instance' + new Date().getTime() ] = new PluginModule( this, options ).init();
+		$[ pluginName ].instances.push( new PluginModule( this, options ).init() );
 
 		return this;
 
