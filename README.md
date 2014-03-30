@@ -21,14 +21,14 @@ Load images via [postpone](https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/Res
 
 #### `loadType`
 
-Type: `String`
+Type: `String`  
 Default value: `postpone`
 
 What type of loading method should be used for current collection.
 
 #### `threshold`
 
-Type: `Number`
+Type: `Number`  
 Default value: `300`
 
 Check for images presence 300px in upwards and downards direction and loads them
@@ -36,7 +36,7 @@ if they are in that view. Valid only for postponed images.
 
 #### `scrollTimeout`
 
-Type: `Number`
+Type: `Number`  
 Default value: `300`
 
 Number in milliseconds for how long should browser debounce scroll (and resize)
