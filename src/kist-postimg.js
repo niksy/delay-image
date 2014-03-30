@@ -82,9 +82,14 @@
 			var element = $(mElement);
 
 			if ( Boolean( element.data('isPostImgAlreadySet') ) === false ) {
+
 				element.data('isPostImgAlreadySet', true);
+				element.addClass( pluginClassNamespace );
+
 			} else {
+
 				this.removeFromImageCollection( element );
+
 			}
 
 		}, this));
