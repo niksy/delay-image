@@ -39,6 +39,11 @@
 
 		this.getDomRefs();
 
+		// Does the current collection have any images which are already defined
+		// as postimg images? If that’s true, filter those images and return
+		// only those which are candidtes for postimg resolution.
+		// Otherwise, if there is no image returned, don’t run any event setup
+		// or image parsing methods.
 		$.when( this.checkPostImgState() ).done($.proxy( function () {
 
 			this.bindUiActions();
@@ -116,16 +121,8 @@
 			return;
 		}
 
-		// Get list of visible images
-		var arrVisibleImages = this.getVisibleImages();
-
-		// If there are no visible images, exit early
-		if ( arrVisibleImages.length === 0 ) {
-			return;
-		}
-
 		// Parse through visible images
-		this.parseImages( arrVisibleImages );
+		this.parseImages( this.domRefs.imagesEl.KistInView('getElementsInView', this.settings.threshold) );
 
 	};
 
@@ -176,11 +173,11 @@
 		} else if ( arrStandardParse.length !== 0 ) {
 
 			// Parse images with standard parser
-			arrStandardParse.each(function (index, element) {
+			arrStandardParse.each($.proxy( function (index, element) {
 
 				var imageEl = $(element);
 
-				$.loadImage( imageEl.data('src') ).done(function () {
+				$.loadImage( imageEl.data('src') ).done($.proxy( function () {
 
 					imageEl
 						.attr('src', imageEl.data('src'))
@@ -188,32 +185,13 @@
 						.removeAttr('width').removeAttr('height')
 						.addClass( pluginClassNamespace + '--is-loaded' );
 
-				});
+					this.domRefs.imagesEl = this.domRefs.imagesEl.not( imageEl );
 
-			});
+				}, this));
+
+			}, this));
 
 		}
-
-	};
-
-	/**
-	 * Get images visible inside viewport
-	 *
-	 * @return {Array}
-	 */
-	o.getVisibleImages = function () {
-
-		var images;
-
-		// Filter images in view
-		images = this.domRefs.imagesEl.KistInView('getElementsInView', this.settings.threshold);
-
-		// Store new reference for images array: new array will be all images
-		// except currently filtered ones. This way we reduce DOM matching to minimum.
-		this.domRefs.imagesEl = this.domRefs.imagesEl.not(images);
-
-		// Return array of images
-		return images;
 
 	};
 
