@@ -111,6 +111,11 @@
 
 			// Parse through visible images
 			this.parseImages( this.domRefs.imagesEl.KistInView('getElementsInView', this.settings.threshold) );
+		// If there are no images, exit early
+		if ( this.domRefs.imagesEl === 0 ) {
+			return;
+		}
+
 
 		};
 
@@ -124,6 +129,19 @@
 		o.parseImages = function ( arrImages ) {
 
 			arrImages.each($.proxy( function ( index, element ) {
+/*
+// Filter images for Picture parser
+arrPictureParse = arrImages.filter(function () { return typeof($(this).data('picture')) != 'undefined'; });
+if ( arrPictureParse.length !== 0 ) {
+
+			if ( !window.hasOwnProperty('Picture') ) {
+				throw new Error('Picture parser is not available.');
+			}
+
+			// Parse images with picture parser
+			window.Picture.parse( arrPictureParse.get() );
+
+		}*/
 
 				var imageEl = $(element);
 
@@ -144,17 +162,13 @@
 		};
 
 		return o;
-
 	})() );
-
 	var KistPostimgLazyLoad = function ( element, options ) {
 		KistPostimg.call( this, element, options );
 	};
 	KistPostimgLazyLoad.prototype             = new KistPostimg();
 	KistPostimgLazyLoad.prototype.constructor = KistPostimgLazyLoad;
-
 	$.extend( KistPostimgLazyLoad.prototype, (function () {
-
 		var o = {};
 
 		o.onCheckPostImgState = function () {
