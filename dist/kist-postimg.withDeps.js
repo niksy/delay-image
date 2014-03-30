@@ -377,7 +377,7 @@ $.loadImage = $.createCache(function ( defer, url ) {
 	image.src = url;
 });
 
-/* kist-postimg 0.1.0 - Load images via postpone or lazyload method. | Author: Ivan Nikolić, 2014 | License: MIT */
+/* kist-postimg 0.1.1 - Load images via postpone or lazyload method. | Author: Ivan Nikolić, 2014 | License: MIT */
 ;(function ( $, window, document, undefined ) {
 
 	var o                    = {};
@@ -419,6 +419,11 @@ $.loadImage = $.createCache(function ( defer, url ) {
 
 		this.getDomRefs();
 
+		// Does the current collection have any images which are already defined
+		// as postimg images? If that’s true, filter those images and return
+		// only those which are candidtes for postimg resolution.
+		// Otherwise, if there is no image returned, don’t run any event setup
+		// or image parsing methods.
 		$.when( this.checkPostImgState() ).done($.proxy( function () {
 
 			this.bindUiActions();
@@ -462,9 +467,14 @@ $.loadImage = $.createCache(function ( defer, url ) {
 			var element = $(mElement);
 
 			if ( Boolean( element.data('isPostImgAlreadySet') ) === false ) {
+
 				element.data('isPostImgAlreadySet', true);
+				element.addClass( pluginClassNamespace );
+
 			} else {
+
 				this.removeFromImageCollection( element );
+
 			}
 
 		}, this));
@@ -491,16 +501,8 @@ $.loadImage = $.createCache(function ( defer, url ) {
 			return;
 		}
 
-		// Get list of visible images
-		var arrVisibleImages = this.getVisibleImages();
-
-		// If there are no visible images, exit early
-		if ( arrVisibleImages.length === 0 ) {
-			return;
-		}
-
 		// Parse through visible images
-		this.parseImages( arrVisibleImages );
+		this.parseImages( this.domRefs.imagesEl.KistInView('getElementsInView', this.settings.threshold) );
 
 	};
 
@@ -530,65 +532,23 @@ $.loadImage = $.createCache(function ( defer, url ) {
 	 */
 	o.parseImages = function ( arrImages ) {
 
-		var arrPictureParse;
-		var arrStandardParse;
+		arrImages.each($.proxy( function ( index, element ) {
 
-		// Filter images for Picture parser
-		arrPictureParse = arrImages.filter(function () { return typeof($(this).data('picture')) != 'undefined'; });
+			var imageEl = $(element);
 
-		// Filter images for standard parser
-		arrStandardParse = arrImages.filter(function () { return $(this).is('img') === true; });
+			$.loadImage( imageEl.data('src') ).done($.proxy( function () {
 
-		if ( arrPictureParse.length !== 0 ) {
+				imageEl
+					.attr('src', imageEl.data('src'))
+					.attr('alt', imageEl.data('alt'))
+					.removeAttr('width').removeAttr('height')
+					.addClass( pluginClassNamespace + '--is-loaded' );
 
-			if ( !window.hasOwnProperty('Picture') ) {
-				throw new Error('Picture parser is not available.');
-			}
+				this.domRefs.imagesEl = this.domRefs.imagesEl.not( imageEl );
 
-			// Parse images with picture parser
-			window.Picture.parse( arrPictureParse.get() );
+			}, this));
 
-		} else if ( arrStandardParse.length !== 0 ) {
-
-			// Parse images with standard parser
-			arrStandardParse.each(function (index, element) {
-
-				var imageEl = $(element);
-
-				$.loadImage( imageEl.data('src') ).done(function () {
-
-					imageEl
-						.attr('src', imageEl.data('src'))
-						.attr('alt', imageEl.data('alt'))
-						.removeAttr('width').removeAttr('height')
-						.addClass( pluginClassNamespace + '--is-loaded' );
-
-				});
-
-			});
-
-		}
-
-	};
-
-	/**
-	 * Get images visible inside viewport
-	 *
-	 * @return {Array}
-	 */
-	o.getVisibleImages = function () {
-
-		var images;
-
-		// Filter images in view
-		images = this.domRefs.imagesEl.KistInView('getElementsInView', this.settings.threshold);
-
-		// Store new reference for images array: new array will be all images
-		// except currently filtered ones. This way we reduce DOM matching to minimum.
-		this.domRefs.imagesEl = this.domRefs.imagesEl.not(images);
-
-		// Return array of images
-		return images;
+		}, this));
 
 	};
 
@@ -621,23 +581,28 @@ $.loadImage = $.createCache(function ( defer, url ) {
 	$.extend( PluginModule.prototype, o );
 
 	$[ pluginName ]           = {};
-	$[ pluginName ].instances = {};
+	$[ pluginName ].instances = [];
 	$[ pluginName ].defaults  = PluginModule.prototype.defaults;
 
+	/**
+	 * Fetch images for all plugin instances
+	 *
+	 * @return {Ui}
+	 */
 	$[ pluginName ].fetchAllImages = function () {
 
-		for ( var i in this.instances ) {
-			if ( this.instances.hasOwnProperty( i ) ) {
-				this.instances[i].fetchPostponedImages();
-				this.instances[i].fetchLazyLoadedImages();
-			}
-		}
+		$.each( this.instances, function ( index, instance ) {
+
+			instance.fetchPostponedImages();
+			instance.fetchLazyLoadedImages();
+
+		});
 
 	};
 
 	$.fn[ pluginName ] = function ( options ) {
 
-		$[ pluginName ].instances[ 'instance' + new Date().getTime() ] = new PluginModule( this, options ).init();
+		$[ pluginName ].instances.push( new PluginModule( this, options ).init() );
 
 		return this;
 
