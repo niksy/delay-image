@@ -1,0 +1,32 @@
+{
+  "name": "kist-postimg",
+  "version": "0.0.0",
+  "description": "Load images via postpone or lazyload method.",
+  "main": "dist/kist-postimg.min.js",
+  "keywords": [
+    "img",
+    "postpone",
+    "lazyload"
+  ],
+  "authors": [
+    "Ivan Nikolić"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.0",
+    "jquery-throttle-debounce": "v1.1",
+    "kist-loaders": "niksy/kist-loaders#~0.1.2",
+    "kist-inview": "niksy/kist-inview#~0.3.0"
+  },
+  "homepage": "https://github.com/niksy/kist-postimg",
+  "moduleType": [
+    "globals"
+  ]
+}
