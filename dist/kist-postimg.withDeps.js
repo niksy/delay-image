@@ -377,7 +377,7 @@ $.loadImage = $.createCache(function ( defer, url ) {
 	image.src = url;
 });
 
-/* kist-postimg 0.1.1 - Load images via postpone or lazyload method. | Author: Ivan Nikolić, 2014 | License: MIT */
+/* kist-postimg 0.1.2 - Load images via postpone or lazyload method. | Author: Ivan Nikolić, 2014 | License: MIT */
 ;(function ( $, window, document, undefined ) {
 
 	var o                    = {};
@@ -462,22 +462,13 @@ $.loadImage = $.createCache(function ( defer, url ) {
 	 */
 	o.checkPostImgState = function () {
 
-		this.domRefs.imagesEl.each($.proxy( function ( mIndex, mElement ) {
+		// Filter only images which are not postimg images
+		this.domRefs.imagesEl = this.domRefs.imagesEl.filter(function () { return Boolean( $(this).data('isPostImgAlreadySet') ) === false; });
 
-			var element = $(mElement);
-
-			if ( Boolean( element.data('isPostImgAlreadySet') ) === false ) {
-
-				element.data('isPostImgAlreadySet', true);
-				element.addClass( pluginClassNamespace );
-
-			} else {
-
-				this.removeFromImageCollection( element );
-
-			}
-
-		}, this));
+		// Assign data to those images
+		this.domRefs.imagesEl
+			.data('isPostImgAlreadySet', true)
+			.addClass( pluginClassNamespace );
 
 		if ( this.domRefs.imagesEl.length !== 0 ) {
 			this.checkPostImgStateDfd.resolve();
@@ -549,32 +540,6 @@ $.loadImage = $.createCache(function ( defer, url ) {
 			}, this));
 
 		}, this));
-
-	};
-
-	/**
-	 * Add to image collection
-	 *
-	 * @param  {$Object} pCollection
-	 *
-	 * @return {Array}
-	 */
-	o.addToImageCollection = function ( pCollection ) {
-
-		this.domRefs['imagesEl'] = this.domRefs['imagesEl'].add( $(pCollection) );
-
-	};
-
-	/**
-	 * Remove from image collection
-	 *
-	 * @param  {$Object} pCollection
-	 *
-	 * @return {Array}
-	 */
-	o.removeFromImageCollection = function ( pCollection ) {
-
-		this.domRefs['imagesEl'] = this.domRefs['imagesEl'].not( $(pCollection) );
 
 	};
 

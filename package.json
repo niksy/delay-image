@@ -1,6 +1,6 @@
 {
   "name": "kist-postimg",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Load images via postpone or lazyload method.",
   "main": "Gruntfile.js",
   "directories": {
