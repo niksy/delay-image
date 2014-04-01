@@ -377,177 +377,191 @@ $.loadImage = $.createCache(function ( defer, url ) {
 	image.src = url;
 });
 
-/* kist-postimg 0.1.2 - Load images via postpone or lazyload method. | Author: Ivan Nikolić, 2014 | License: MIT */
+/* kist-postimg 0.1.3 - Load images via postpone or lazyload method. | Author: Ivan Nikolić, 2014 | License: MIT */
 ;(function ( $, window, document, undefined ) {
 
-	var o                    = {};
 	var pluginName           = 'KistPostimg';
 	var pluginDomNamespace   = 'kist-postimg';
 	var pluginClassNamespace = 'KistPostimg';
 	var pluginEventNamespace = 'kist.postimg';
 
-	var PluginModule = function ( element, options ) {
-
-		this._element  = element;
-		this.settings  = $.extend( {}, this.defaults, options );
-
+	var KistPostimg = function ( element, options ) {
+		this._element = element;
+		this.settings = $.extend( {}, this.defaults, options );
 	};
 
-	/**
-	 * Default options
-	 *
-	 * @type {Object}
-	 */
-	o.defaults = {
-		threshold: 300,
-		scrollTimeout: 300,
-		loadType: 'postpone'
-	};
+	$.extend( KistPostimg.prototype, (function () {
 
-	o.domRefs = {
-		windowEl: $(window)
-	};
+		var o = {};
 
-	/**
-	 * Initialize plugin
-	 *
-	 * @return {Plugin}
-	 */
-	o.init = function () {
+		/**
+		 * Default options
+		 *
+		 * @type {Object}
+		 */
+		o.defaults = {
+			threshold: 300,
+			scrollTimeout: 300,
+			loadType: 'postpone'
+		};
 
-		this.checkPostImgStateDfd = $.Deferred();
+		o.domRefs = {
+			windowEl: $(window)
+		};
 
-		this.getDomRefs();
+		/**
+		 * Initialize plugin
+		 *
+		 * @return {Plugin}
+		 */
+		o.init = function () {
 
-		// Does the current collection have any images which are already defined
-		// as postimg images? If that’s true, filter those images and return
-		// only those which are candidtes for postimg resolution.
-		// Otherwise, if there is no image returned, don’t run any event setup
-		// or image parsing methods.
-		$.when( this.checkPostImgState() ).done($.proxy( function () {
+			this.checkPostImgStateDfd = $.Deferred();
+
+			this.getDomRefs();
+
+			// Does the current collection have any images which are already defined
+			// as postimg images? If that’s true, filter those images and return
+			// only those which are candidtes for postimg resolution.
+			// Otherwise, if there is no image returned, don’t run any event setup
+			// or image parsing methods.
+			$.when( this.checkPostImgState() ).done( $.proxy( this.onCheckPostImgState, this ) );
+
+			return this;
+
+		};
+
+		/**
+		 * Get DOM references
+		 *
+		 * @return {Plugin}
+		 */
+		o.getDomRefs = function () {
+
+			this.domRefs          = $.extend({}, this.domRefs);
+			this.domRefs.imagesEl = $( this._element );
+
+		};
+
+		o.bindUiActions = function () {
+
+			this.domRefs.windowEl.on( 'scroll.' + pluginEventNamespace, $.debounce( this.settings.scrollTimeout, $.proxy( this.fetchImages, this ) ) );
+			this.domRefs.windowEl.on( 'resize.' + pluginEventNamespace, $.debounce( this.settings.scrollTimeout, $.proxy( this.fetchImages, this ) ) );
+
+		};
+
+		/**
+		 * Check if images already have attached postimg state
+		 *
+		 * @return {Promise}
+		 */
+		o.checkPostImgState = function () {
+
+			// Filter only images which are not postimg images
+			this.domRefs.imagesEl = this.domRefs.imagesEl.filter(function () { return Boolean( $(this).data('isPostImgAlreadySet') ) === false; });
+
+			// Assign data to those images
+			this.domRefs.imagesEl
+				.data('isPostImgAlreadySet', true)
+				.addClass( pluginClassNamespace );
+
+			if ( this.domRefs.imagesEl.length !== 0 ) {
+				this.checkPostImgStateDfd.resolve();
+			} else {
+				this.checkPostImgStateDfd.reject();
+			}
+
+			return this.checkPostImgStateDfd.promise();
+
+		};
+
+		o.onCheckPostImgState = function () {
 
 			this.bindUiActions();
-			this.fetchPostponedImages();
-			this.fetchLazyLoadedImages();
+			this.fetchImages();
 
-		}, this));
+		};
 
-		return this;
+		/**
+		 * Fetch and parse images based on viewport size
+		 *
+		 * @return {Ui}
+		 */
+		o.fetchImages = function () {
 
-	};
+			// Parse through visible images
+			this.parseImages( this.domRefs.imagesEl.KistInView('getElementsInView', this.settings.threshold) );
 
-	/**
-	 * Get DOM references
-	 *
-	 * @return {Plugin}
-	 */
-	o.getDomRefs = function () {
+		};
 
-		this.domRefs          = $.extend({}, this.domRefs);
-		this.domRefs.imagesEl = $( this._element );
+		/**
+		 * Parse images
+		 *
+		 * @param  {$Object} arrImages
+		 *
+		 * @return {Ui}
+		 */
+		o.parseImages = function ( arrImages ) {
 
-	};
+			arrImages.each($.proxy( function ( index, element ) {
 
-	o.bindUiActions = function () {
+				var imageEl = $(element);
 
-		this.domRefs.windowEl.on( 'scroll.' + pluginEventNamespace, $.debounce(this.settings.scrollTimeout, $.proxy( this.fetchPostponedImages, this )));
-		this.domRefs.windowEl.on( 'resize.' + pluginEventNamespace, $.debounce(this.settings.scrollTimeout, $.proxy( this.fetchPostponedImages, this )));
+				$.loadImage( imageEl.data('src') ).done($.proxy( function () {
 
-	};
+					imageEl
+						.attr('src', imageEl.data('src'))
+						.attr('alt', imageEl.data('alt'))
+						.removeAttr('width').removeAttr('height')
+						.addClass( pluginClassNamespace + '--is-loaded' );
 
-	/**
-	 * Check if images already have attached postimg state
-	 *
-	 * @return {Promise}
-	 */
-	o.checkPostImgState = function () {
+					this.domRefs.imagesEl = this.domRefs.imagesEl.not( imageEl );
 
-		// Filter only images which are not postimg images
-		this.domRefs.imagesEl = this.domRefs.imagesEl.filter(function () { return Boolean( $(this).data('isPostImgAlreadySet') ) === false; });
-
-		// Assign data to those images
-		this.domRefs.imagesEl
-			.data('isPostImgAlreadySet', true)
-			.addClass( pluginClassNamespace );
-
-		if ( this.domRefs.imagesEl.length !== 0 ) {
-			this.checkPostImgStateDfd.resolve();
-		} else {
-			this.checkPostImgStateDfd.reject();
-		}
-
-		return this.checkPostImgStateDfd.promise();
-
-	};
-
-	/**
-	 * Fetch and parse images based on viewport size
-	 *
-	 * @return {Ui}
-	 */
-	o.fetchPostponedImages = function () {
-
-		// Don’t do anything if we’re not dealing with postpone collection
-		if ( this.settings.loadType !== 'postpone' ) {
-			return;
-		}
-
-		// Parse through visible images
-		this.parseImages( this.domRefs.imagesEl.KistInView('getElementsInView', this.settings.threshold) );
-
-	};
-
-	/**
-	 * Fetch and parse lazyloaded images
-	 *
-	 * @return {Ui}
-	 */
-	o.fetchLazyLoadedImages = function () {
-
-		// Don’t do anything if we’re not dealing with lazyload collection
-		if ( this.settings.loadType !== 'lazyload' ) {
-			return;
-		}
-
-		// Parse through images
-		this.parseImages( this.domRefs.imagesEl );
-
-	};
-
-	/**
-	 * Parse images
-	 *
-	 * @param  {$Object} arrImages
-	 *
-	 * @return {Ui}
-	 */
-	o.parseImages = function ( arrImages ) {
-
-		arrImages.each($.proxy( function ( index, element ) {
-
-			var imageEl = $(element);
-
-			$.loadImage( imageEl.data('src') ).done($.proxy( function () {
-
-				imageEl
-					.attr('src', imageEl.data('src'))
-					.attr('alt', imageEl.data('alt'))
-					.removeAttr('width').removeAttr('height')
-					.addClass( pluginClassNamespace + '--is-loaded' );
-
-				this.domRefs.imagesEl = this.domRefs.imagesEl.not( imageEl );
+				}, this));
 
 			}, this));
 
-		}, this));
+		};
 
+		return o;
+
+	})() );
+
+	var KistPostimgLazyLoad = function ( element, options ) {
+		KistPostimg.call( this, element, options );
 	};
+	KistPostimgLazyLoad.prototype             = new KistPostimg();
+	KistPostimgLazyLoad.prototype.constructor = KistPostimgLazyLoad;
 
-	$.extend( PluginModule.prototype, o );
+	$.extend( KistPostimgLazyLoad.prototype, (function () {
+
+		var o = {};
+
+		o.onCheckPostImgState = function () {
+
+			this.fetchImages();
+
+		};
+
+		/**
+		 * Fetch and parse lazyloaded images
+		 *
+		 * @return {Ui}
+		 */
+		o.fetchImages = function () {
+
+			// Parse through images
+			this.parseImages( this.domRefs.imagesEl );
+
+		};
+
+		return o;
+
+	})() );
 
 	$[ pluginName ]           = {};
 	$[ pluginName ].instances = [];
-	$[ pluginName ].defaults  = PluginModule.prototype.defaults;
+	$[ pluginName ].defaults  = KistPostimg.prototype.defaults;
 
 	/**
 	 * Fetch images for all plugin instances
@@ -557,17 +571,20 @@ $.loadImage = $.createCache(function ( defer, url ) {
 	$[ pluginName ].fetchAllImages = function () {
 
 		$.each( this.instances, function ( index, instance ) {
-
-			instance.fetchPostponedImages();
-			instance.fetchLazyLoadedImages();
-
+			instance.fetchImages();
 		});
 
 	};
 
 	$.fn[ pluginName ] = function ( options ) {
 
-		$[ pluginName ].instances.push( new PluginModule( this, options ).init() );
+		options = options || {};
+
+		if ( options.loadType === 'lazyload' ) {
+			$[ pluginName ].instances.push( new KistPostimgLazyLoad( this, options ).init() );
+		} else {
+			$[ pluginName ].instances.push( new KistPostimg( this, options ).init() );
+		}
 
 		return this;
 
