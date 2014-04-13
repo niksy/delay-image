@@ -140,16 +140,17 @@
 
 		},
 
-		bindUiActions: function ( unbind ) {
+		bindUiActions: function () {
 
-			if ( Boolean(unbind) === true ) {
-				this.domRefs.windowEl.off( 'scroll.' + this.instanceId + '.' + pluginEventNamespace );
-				this.domRefs.windowEl.off( 'resize.' + this.instanceId + '.' + pluginEventNamespace );
-				return;
-			}
+			this.domRefs.windowEl
+				.on( 'scroll.' + this.instanceId + '.' + pluginEventNamespace, $.debounce( this.settings.scrollTimeout, $.proxy( this.fetchImages, this ) ) )
+				.on( 'resize.' + this.instanceId + '.' + pluginEventNamespace, $.debounce( this.settings.scrollTimeout, $.proxy( this.fetchImages, this ) ) );
 
-			this.domRefs.windowEl.on( 'scroll.' + this.instanceId + '.' + pluginEventNamespace, $.debounce( this.settings.scrollTimeout, $.proxy( this.fetchImages, this ) ) );
-			this.domRefs.windowEl.on( 'resize.' + this.instanceId + '.' + pluginEventNamespace, $.debounce( this.settings.scrollTimeout, $.proxy( this.fetchImages, this ) ) );
+		},
+
+		unbindUiActions: function () {
+
+			this.domRefs.windowEl.off( '.' + this.instanceId + '.' + pluginEventNamespace );
 
 		},
 
@@ -169,7 +170,7 @@
 
 			// If there are no more images to parse, unbind window events
 			if ( this.settings.imagesElRemainingCount === 0 ) {
-				this.bindUiActions('unbind');
+				this.unbindUiActions();
 			}
 
 			// Parse through visible images
