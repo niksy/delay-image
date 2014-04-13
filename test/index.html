@@ -42,13 +42,10 @@
 
 	<script>
 
-		$('.first-set').KistPostimg().addClass('foo');
-		$('.second-set').KistPostimg();
-		$('.third-set').KistPostimg({
-			loadType: 'lazyload'
-		});
-
-		$('.non-existent').KistPostimg();
+		$('.first-set').KistPostimg('postpone').addClass('foo');
+		$('.second-set').KistPostimg('postpone');
+		$('.third-set').KistPostimg('lazyload');
+		$('.non-existent').KistPostimg('postpone');
 
 	</script>
 
