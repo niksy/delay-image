@@ -7,8 +7,7 @@
 	"nonew": true,
 	"quotmark": "single",
 	"strict": false,
-	"trailing": true,
 	"maxparams": 4,
-	"sub": true,
-	"smarttabs": true
+	"maxdepth": 3,
+	"sub": true
 }

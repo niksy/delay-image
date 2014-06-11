@@ -1,77 +1,33 @@
-module.exports = function (grunt) {
+module.exports = function ( grunt ) {
 
 	grunt.initConfig({
 
 		pkg: grunt.file.readJSON('package.json'),
 
 		meta: {
-			banner: '<%= pkg.name %> <%= pkg.version %> - <%= pkg.description %> | Author: <%= pkg.author %>, <%= grunt.template.today("yyyy") %> | License: <%= pkg.license %>',
-			defaultBanner: '/* <%= meta.banner %> */\n',
-			unstrippedBanner: '/*! <%= meta.banner %> */\n'
+			banner: '/*! <%= pkg.name %> <%= pkg.version %> - <%= pkg.description %> | Author: <%= pkg.author %>, <%= grunt.template.today("yyyy") %> | License: <%= pkg.license %> */\n'
 		},
 
 		concat: {
-			main: {
+			dist: {
 				options: {
 					stripBanners: true,
-					banner: '<%= meta.defaultBanner %>'
+					banner: '<%= meta.banner %>'
 				},
 				files: {
-					'dist/kist-postimg.js': ['src/kist-postimg.js']
-				}
-			},
-			withDeps: {
-				files: {
-					'dist/kist-postimg.withDeps.js': [
-						'bower_components/jquery-throttle-debounce/jquery.ba-throttle-debounce.js',
-						'bower_components/kist-inview/dist/kist-inview.js',
-						'bower_components/kist-loaders/dist/util/createCache.js',
-						'bower_components/kist-loaders/dist/loadImage.js',
-						'dist/kist-postimg.js'
-					],
-					'dist/kist-postimg.withDeps.min.js': [
-						'bower_components/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js',
-						'bower_components/kist-inview/dist/kist-inview.min.js',
-						'bower_components/kist-loaders/dist/util/createCache.min.js',
-						'bower_components/kist-loaders/dist/loadImage.min.js',
-						'dist/kist-postimg.min.js'
-					]
+					'dist/kist-delayImages.js': ['src/kist-delayImages.js']
 				}
 			}
 		},
 
 		uglify: {
-			main: {
+			dist: {
 				options: {
-					banner: '<%= meta.unstrippedBanner %>'
+					banner: '<%= meta.banner %>'
 				},
 				files: {
-					'dist/kist-postimg.min.js': ['src/kist-postimg.js']
+					'dist/kist-delayImages.min.js': ['src/kist-delayImages.js']
 				}
-			}
-		},
-
-		jscs: {
-			main: {
-				options: {
-					config: '.jscs.json'
-				},
-				files: {
-					src: [
-						'src/kist-postimg.js'
-					]
-				}
-			}
-		},
-
-		jshint: {
-			main: {
-				options: {
-					jshintrc: '.jshintrc'
-				},
-				src: [
-					'src/kist-postimg.js'
-				]
 			}
 		},
 
@@ -84,8 +40,32 @@ module.exports = function (grunt) {
 				commitFiles: ['-a'],
 				createTag: true,
 				tagName: '%VERSION%',
-				tagMessage: 'Version %VERSION%',
+				tagMessage: '',
 				push: false
+			}
+		},
+
+		jscs: {
+			main: {
+				options: {
+					config: '.jscsrc'
+				},
+				files: {
+					src: [
+						'src/**/*.js'
+					]
+				}
+			}
+		},
+
+		jshint: {
+			main: {
+				options: {
+					jshintrc: '.jshintrc'
+				},
+				src: [
+					'src/**/*.js'
+				]
 			}
 		}
 
@@ -98,10 +78,9 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks( 'grunt-bump' );
 
 	grunt.registerTask( 'stylecheck', ['jshint:main', 'jscs:main'] );
-	grunt.registerTask( 'default', ['stylecheck', 'concat:main', 'uglify:main', 'concat:withDeps'] );
+	grunt.registerTask( 'default', ['concat', 'uglify'] );
 	grunt.registerTask( 'releasePatch', ['bump-only:patch', 'default', 'bump-commit'] );
 	grunt.registerTask( 'releaseMinor', ['bump-only:minor', 'default', 'bump-commit'] );
 	grunt.registerTask( 'releaseMajor', ['bump-only:major', 'default', 'bump-commit'] );
-
 
 };
