@@ -1,3 +1,4 @@
+/*! kist-delayImages 0.2.1 - Delay images via postpone or lazyload. | Author: Ivan Nikolić, 2014 | License: MIT */
 ;(function ( $, window, document, undefined ) {
 
 	var plugin = {

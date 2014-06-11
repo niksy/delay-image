@@ -7,8 +7,13 @@
   ],
   "license": "MIT",
   "main": "dist/kist-delayImages.min.js",
-  "keywords": [],
-  "homepage": "",
+  "keywords": [
+    "delay",
+    "images",
+    "postpone",
+    "lazyload"
+  ],
+  "homepage": "https://github.com/niksy/kist-delayImages",
   "ignore": [
     "**/.*",
     "node_modules",

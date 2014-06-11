@@ -2,64 +2,160 @@
 
 Load images via [postpone](https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-postpone) or [lazyload](https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-lazyload) method.
 
-## Usage
+## Installation
 
-1. Include jQuery, plugin and necessary dependancies (see `bower.json` for details).
-
-    ```html
-    <script src="jquery.min.js"></script>
-    <script src="dist/kist-postimg.min.js">
-
-    <img data-src="image.png" />
-    ```
-
-3. Initialize plugin.
-
-    ```javascript
-    $('img').KistPostimg('postpone', { threshold: 200 });
-    ```
+```sh
+bower install niksy/kist-delayImages
+```
 
 ## API
 
-### `KistPostimg( method, options )`
+### `Element.delayImages([method], [options])`
 
-#### `method`
+Returns: `jQuery`
+
+#### method
+
+Type: `String|Object`
+
+##### Method defined as `String`
 
 Type: `String`  
+Default: `lazyload`
 
-Required. Valid options are "postpone" and "lazyload".
+Image loading method to use. Possible values are `lazyload` and `postpone`.
 
-#### `options`
+###### destroy
 
-Type: `Objecet`
+Destroy plugin instance.
 
-Valid only for "postpone" load method.
+##### Method defined as `Object`
 
-##### `threshold`
+###### method
 
-Type: `Number`  
-Default value: `300`
+Type: `String`  
+Default: `lazyload`
 
-Check for images presence 300px in upwards and downards direction and loads them
-if they are in that view. Valid only for postponed images.
+Image loading method to use. Possible values are `lazyload` and `postpone`.
 
-##### `scrollTimeout`
+###### threshold
 
-Type: `Number`  
-Default value: `300`
+Type: `Integer`  
+Default: `0`
 
-Number in milliseconds for how long should browser debounce scroll (and resize)
-events for that image collection. Valid only for postponed images.
+Value in pixels which will signal plugin to check for image presence earlier in document.
 
-## Global methods
+###### debounce
 
-#### `$.KistPostimg.fetchAllImages`
+Type: `Integer`  
+Default: `300`
 
-Fetch images for every created instance of Kist Postimg plugin. Useful when you
-do lots of layout reflowing and want to check and fetch every image collection.
+If [debounce plugin](https://github.com/niksy/jquery-throttle-debounce) is available, time in milliseconds which will be used to debounce callback execution.
+
+###### success
+
+Type: `Function`  
+Returns: ( [Images in viewport] )
+
+Callback to execute if there are images inside viewport.
+
+#### success
+
+Type: `Function`  
+Returns: ( [Images in viewport] )
+
+Callback to execute if there are images inside viewport.
+
+#### options
+
+Type: `Object|Function`
+
+##### Options defined as `Object`
+
+[See "Method defined as `Object`"](#method-defined-as-object).
+
+##### Options defined as `Function`
+
+Type: `Function`  
+Returns: ( [Images in viewport] )
+
+Callback to execute if there are images inside viewport.
+
+### Global options
+
+#### `$.delayImages.postpone.defaults`
+
+Type: `Object`
+
+Change defaults for postpone method.
+
+## Examples
+
+Lazyload images.
+
+```js
+$('img').delayImages();
+```
+
+Postpone images with default options.
+
+```js
+$('img').delayImages('postpone');
+```
+
+Callback when postponed images with default options are in viewport.
+
+```js
+$('img').delayImages('postpone', function ( images ) {
+	console.log('Images are in viewport!');
+});
+```
+
+Callback when postponed images with 300px threshold and 300ms debounce are in viewport.
+
+```js
+$('img').delayImages('postpone', {
+	threshold: 300,
+	debounce: 300,
+	success: function ( images ) {
+		console.log('Images are in viewport!');
+	}
+});
+
+$('img').delayImages({
+	method: 'postpone',
+	threshold: 300,
+	debounce: 300,
+}, function ( images ) {
+	console.log('Images are in viewport!');
+});
+
+$('img').delayImages({
+	method: 'postpone',
+	threshold: 300,
+	debounce: 300,
+	success: function ( images ) {
+		cb();
+	}
+});
+```
+
+Destroy plugin instance.
+
+```js
+$('img').delayImages('destroy');
+```
 
 ## Caveats
 
 For postponed images to load properly (only visible in viewport), some dimension 
 (height) needs to be set for them, otherwise browser will try to download every
 image in collection.
+
+## Browser support
+
+Tested in IE8+ and all modern browsers.
+
+## License
+
+MIT © [Ivan Nikolić](http://ivannikolic.com)
