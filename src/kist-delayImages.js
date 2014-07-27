@@ -44,7 +44,7 @@
 	var aux = {
 		setup: function () {
 			this.aux = this.aux || {};
-			this.aux.loadImage = $.proxy($.kist.loader.loadImage, $.kist.loader);
+			this.aux.loadImage = $.kist.loader.loadImage;
 		}
 	};
 
@@ -105,6 +105,12 @@
 		return options;
 	}
 
+	/**
+	 * @class
+	 *
+	 * @param {jQuery} element
+	 * @param {Object} options
+	 */
 	function Lazyload ( element, options ) {
 
 		this.element = element;
@@ -185,7 +191,7 @@
 					}
 
 					if ( this.options.success ) {
-						this.options.success.call(null, el);
+						this.options.success.call(this.dom.el, el);
 					}
 					Postpone._super.parse.call(this, el);
 
@@ -243,11 +249,12 @@
 		/**
 		 * Get collection of images instead of single image
 		 */
-		this
-			.filter(function ( element ) {
-				return !$.data(element, plugin.name);
-			})
-			.data(plugin.name, new Method( this, options ));
+		var collection = this.filter(function () {
+			return !$.data(this, plugin.name);
+		});
+		if ( collection.length ) {
+			collection.data(plugin.name, new Method(collection, options));
+		}
 
 		return this;
 

@@ -113,6 +113,15 @@
 			}
 		});
 
+		$('.first-set').delayImages({
+			method: 'postpone',
+			threshold: 300,
+			debounce: 100,
+			success: function ( images ) {
+				console.log('First set, second time!');
+			}
+		});
+
 	</script>
 
 </body>
