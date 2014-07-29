@@ -224,6 +224,10 @@
 				debounce: this.options.debounce,
 				once: $.proxy(function ( result ) {
 
+					if ( this.options.start ) {
+						this.options.start.call(this._element, result);
+					}
+
 					Postpone._super.parse.call(this, result)
 						.done($.proxy(function () {
 
@@ -246,7 +250,8 @@
 		defaults: {
 			threshold: 0,
 			debounce: 300,
-			success: null
+			success: null,
+			start: null
 		}
 
 	});

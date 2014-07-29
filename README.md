@@ -59,6 +59,13 @@ Returns: ( [Images in viewport] )
 
 Callback to execute if there are images inside viewport and after those images have been loaded.
 
+###### start
+
+Type: `Function`  
+Returns: ( [Images in viewport] )
+
+Callback to execute if there are images inside viewport and before those image have been loaded.
+
 #### success
 
 Type: `Function`  
@@ -134,6 +141,9 @@ $('img').delayImages({
 	method: 'postpone',
 	threshold: 300,
 	debounce: 300,
+	start: function ( images ) {
+		cb();
+	},
 	success: function ( images ) {
 		cb();
 	}
