@@ -1,4 +1,4 @@
-/*! kist-delayImages 0.3.2 - Delay images via postpone or lazyload. | Author: Ivan Nikolić, 2014 | License: MIT */
+/*! kist-delayImages 0.3.3 - Delay images via postpone or lazyload. | Author: Ivan Nikolić, 2014 | License: MIT */
 ;(function ( $, window, document, undefined ) {
 
 	var plugin = {
@@ -23,7 +23,15 @@
 			this.dom    = this.dom || {};
 			this.dom.el = $(this.element);
 
+			// Get collection of elements as array of DOM nodes
+			this._element = this.dom.el.toArray();
+
 			this.dom.el.addClass(plugin.classes.image);
+		},
+		destroy: function () {
+			$.each(plugin.classes, $.proxy(function ( prop, val ) {
+				this.dom.el.removeClass(val);
+			}, this));
 		}
 	};
 
@@ -37,7 +45,6 @@
 		destroy: function () {
 			this.dom.el.each(function ( index, element ) {
 				delete $.data(element)[plugin.name];
-				delete $.data(element)[plugin.name + '-inView'];
 			});
 		}
 	};
@@ -46,10 +53,17 @@
 		setup: function () {
 			this.aux = this.aux || {};
 			this.aux.loadImage = $.kist.loader.loadImage;
+			// $.fn.inView
 		}
 	};
 
-	function resolveOptions ( method, options ) {
+	/**
+	 * @param  {String|Object} method
+	 * @param  {Object|Function} options
+	 *
+	 * @return {Object}
+	 */
+	function constructOptions ( method, options ) {
 
 		var o = {};
 
@@ -78,7 +92,12 @@
 
 	}
 
-	function resolveMethod ( options ) {
+	/**
+	 * @param  {String} options
+	 *
+	 * @return {Function}
+	 */
+	function constructMethod ( options ) {
 
 		switch (options.method) {
 			case 'lazyload':
@@ -92,6 +111,11 @@
 
 	}
 
+	/**
+	 * @param  {String} options
+	 *
+	 * @return {Object}
+	 */
 	function cleanOptions ( options ) {
 
 		switch (options.method) {
@@ -132,39 +156,56 @@
 		 */
 		parse: function ( images ) {
 
+			var arr = [];
+			var dfd = $.Deferred();
+
+			images.addClass(plugin.classes.isLoading);
+
 			images.each($.proxy( function ( index, element ) {
 
+				var load;
 				element = $(element);
-				element.addClass(plugin.classes.isLoading);
 
-				this.aux.loadImage(element.data('src')).done($.proxy(this.onParse, this, element));
+				load = this.aux.loadImage(element.data('src'));
+				arr.push(load);
+
+				load.always($.proxy(this.success, this, element));
 
 			}, this));
+
+			$.when.apply(window, arr).always(dfd.resolve);
+
+			return dfd.promise();
 
 		},
 
 		/**
 		 * @param  {jQuery} image
+		 *
+		 * @return {}
 		 */
-		onParse: function ( image ) {
+		success: function ( image ) {
 
 			image
 				.attr({
 					src: image.data('src'),
 					alt: image.data('alt')
 				})
-				.removeAttr('width height')
 				.removeClass(plugin.classes.isLoading)
 				.addClass(plugin.classes.isLoaded);
 
 		},
 
 		destroy: function () {
+			dom.destroy.call(this);
 			instance.destroy.call(this);
 		}
 
 	});
 
+	/**
+	 * @class
+	 */
 	function Postpone () {
 		Postpone._super.constructor.apply(this, arguments);
 
@@ -179,35 +220,27 @@
 
 		parse: function ( images ) {
 
-			this.remaining = images.length;
-
 			images.inView({
 				threshold: this.options.threshold,
 				debounce: this.options.debounce,
-				success: $.proxy(function ( el ) {
+				once: $.proxy(function ( result ) {
 
-					if ( this.remaining === 0 ) {
-						this.destroy();
-						return;
+					if ( this.options.start ) {
+						this.options.start.call(this._element, result);
 					}
 
-					if ( this.options.success ) {
-						this.options.success.call(this.dom.el, el);
-					}
-					Postpone._super.parse.call(this, el);
+					Postpone._super.parse.call(this, result)
+						.done($.proxy(function () {
+
+							if ( this.options.success ) {
+								this.options.success.call(this._element, result);
+							}
+
+						}, this));
 
 				}, this)
 			});
 
-		},
-
-		onParse: function ( image ) {
-			Postpone._super.onParse.apply(this, arguments);
-			if ( image.data(plugin.name + '-inView') ) {
-				return;
-			}
-			image.data(plugin.name + '-inView', true);
-			this.remaining--;
 		},
 
 		destroy: function () {
@@ -217,7 +250,9 @@
 
 		defaults: {
 			threshold: 0,
-			debounce: 300
+			debounce: 300,
+			success: null,
+			start: null
 		}
 
 	});
@@ -243,15 +278,18 @@
 			});
 		}
 
-		options = resolveOptions(method, options);
-		Method = resolveMethod(options);
+		options = constructOptions(method, options);
+		Method = constructMethod(options);
 		options = cleanOptions(options);
 
 		/**
-		 * Get collection of images instead of single image
+		 * If there are multiple elements, first filter those which don’t
+		 * have any instance of plugin instantiated. Then create only one
+		 * instance for current collection which will enable us to have
+		 * only one scroll/resize event.
 		 */
 		var collection = this.filter(function () {
-			return !$.data(this, plugin.name);
+			return !$.data(this, plugin.name) && $(this).is('img');
 		});
 		if ( collection.length ) {
 			collection.data(plugin.name, new Method(collection, options));
