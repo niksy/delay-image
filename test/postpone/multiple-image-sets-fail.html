@@ -80,6 +80,7 @@
 
 		$('.third-set').delayImages({
 			method: 'postpone',
+			debounce: 0,
 			success: function ( images ) {
 				if ( !+'\v1' ) {
 					alert('third-set' + JSON.stringify(images, null, '\t'));
@@ -106,6 +107,7 @@
 
 		$('.nonexistent-set').delayImages({
 			method: 'postpone',
+			debounce: 0,
 			success: function ( images ) {
 				if ( !+'\v1' ) {
 					alert('nonexistent-set-set' + JSON.stringify(images, null, '\t'));

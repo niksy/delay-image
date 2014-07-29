@@ -155,17 +155,26 @@
 		 */
 		parse: function ( images ) {
 
+			var arr = [];
+			var dfd = $.Deferred();
+
 			images.addClass(plugin.classes.isLoading);
 
 			images.each($.proxy( function ( index, element ) {
 
+				var load;
 				element = $(element);
 
-				this.aux
-					.loadImage(element.data('src'))
-					.always($.proxy(this.success, this, element));
+				load = this.aux.loadImage(element.data('src'));
+				arr.push(load);
+
+				load.always($.proxy(this.success, this, element));
 
 			}, this));
+
+			$.when.apply(window, arr).always(dfd.resolve);
+
+			return dfd.promise();
 
 		},
 
@@ -215,10 +224,14 @@
 				debounce: this.options.debounce,
 				once: $.proxy(function ( result ) {
 
-					if ( this.options.success ) {
-						this.options.success.call(this._element, result);
-					}
-					Postpone._super.parse.call(this, result);
+					Postpone._super.parse.call(this, result)
+						.done($.proxy(function () {
+
+							if ( this.options.success ) {
+								this.options.success.call(this._element, result);
+							}
+
+						}, this));
 
 				}, this)
 			});

@@ -57,7 +57,7 @@ If [debounce plugin](https://github.com/niksy/jquery-throttle-debounce) is avail
 Type: `Function`  
 Returns: ( [Images in viewport] )
 
-Callback to execute if there are images inside viewport.
+Callback to execute if there are images inside viewport and after those images have been loaded.
 
 #### success
 
