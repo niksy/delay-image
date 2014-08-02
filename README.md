@@ -98,6 +98,12 @@ Change defaults for postpone method.
 
 ## Examples
 
+Default structure for delayed images.
+
+```html
+<img data-src="example.png" data-alt="Example" />
+```
+
 Lazyload images.
 
 ```js
