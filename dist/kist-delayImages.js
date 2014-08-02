@@ -1,4 +1,4 @@
-/*! kist-delayImages 0.3.3 - Delay images via postpone or lazyload. | Author: Ivan Nikolić, 2014 | License: MIT */
+/*! kist-delayImages 0.3.4 - Delay images via postpone or lazyload. | Author: Ivan Nikolić, 2014 | License: MIT */
 ;(function ( $, window, document, undefined ) {
 
 	var plugin = {
@@ -58,38 +58,12 @@
 	};
 
 	/**
-	 * @param  {String|Object} method
-	 * @param  {Object|Function} options
+	 * @param  {Mixed} options
 	 *
 	 * @return {Object}
 	 */
-	function constructOptions ( method, options ) {
-
-		var o = {};
-
-		switch (typeof(method)) {
-			case 'string':
-				o.method = method;
-				break;
-			case 'object':
-				$.extend(o, method);
-				break;
-			default:
-				o.method = 'lazyload';
-				break;
-		}
-
-		switch (typeof(options)) {
-			case 'object':
-				$.extend(o, options);
-				break;
-			case 'function':
-				o.success = options;
-				break;
-		}
-
-		return o;
-
+	function constructOptions ( options ) {
+		return typeof(options) === 'object' ? options : {};
 	}
 
 	/**
@@ -98,36 +72,7 @@
 	 * @return {Function}
 	 */
 	function constructMethod ( options ) {
-
-		switch (options.method) {
-			case 'lazyload':
-				return Lazyload;
-			case 'postpone':
-				return Postpone;
-			default:
-				plugin.error('Unsupported method "' + options.method + '".');
-				break;
-		}
-
-	}
-
-	/**
-	 * @param  {String} options
-	 *
-	 * @return {Object}
-	 */
-	function cleanOptions ( options ) {
-
-		switch (options.method) {
-			case 'lazyload':
-				options = {};
-				break;
-			case 'postpone':
-				delete options.method;
-				break;
-		}
-
-		return options;
+		return options.method === 'postpone' ? Postpone : Lazyload;
 	}
 
 	/**
@@ -153,8 +98,22 @@
 
 		/**
 		 * @param  {jQuery} images
+		 *
+		 * @return {Promise}
 		 */
 		parse: function ( images ) {
+
+			/**
+			 * Why not load every image with one call to loadImage?
+			 *
+			 * Since some images can be unreachable, single image which is like
+			 * that will result in rejected promise from loadImage which will trigger
+			 * every image’s success callback earlier.
+			 *
+			 * Using it this way we set loadImage for every image and resolve only
+			 * one promise for global success, while every image gets to call
+			 * it’s success independetly of other images.
+			 */
 
 			var arr = [];
 			var dfd = $.Deferred();
@@ -163,13 +122,9 @@
 
 			images.each($.proxy( function ( index, element ) {
 
-				var load;
 				element = $(element);
-
-				load = this.aux.loadImage(element.data('src'));
-				arr.push(load);
-
-				load.always($.proxy(this.success, this, element));
+				arr.push(this.aux.loadImage(element.data('src')));
+				arr[arr.length-1].always($.proxy(this.success, this, element));
 
 			}, this));
 
@@ -265,22 +220,19 @@
 		}
 	};
 
-	$.fn[plugin.name] = function ( method, options ) {
+	$.fn[plugin.name] = function ( options ) {
 
-		var Method;
-
-		if ( typeof(method) === 'string' && $.inArray(method, plugin.publicMethods) !== -1 ) {
+		if ( typeof(options) === 'string' && $.inArray(options, plugin.publicMethods) !== -1 ) {
 			return this.each(function () {
 				var pluginInstance = $.data(this, plugin.name);
 				if ( pluginInstance ) {
-					pluginInstance[method]();
+					pluginInstance[options]();
 				}
 			});
 		}
 
-		options = constructOptions(method, options);
-		Method = constructMethod(options);
-		options = cleanOptions(options);
+		options = constructOptions(options);
+		var Method = constructMethod(options);
 
 		/**
 		 * If there are multiple elements, first filter those which don’t
