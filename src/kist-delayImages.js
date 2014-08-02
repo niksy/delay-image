@@ -152,8 +152,22 @@
 
 		/**
 		 * @param  {jQuery} images
+		 *
+		 * @return {Promise}
 		 */
 		parse: function ( images ) {
+
+			/**
+			 * Why not load every image with one call to loadImage?
+			 *
+			 * Since some images can be unreachable, single image which is like
+			 * that will result in rejected promise from loadImage which will trigger
+			 * every image’s success callback earlier.
+			 *
+			 * Using it this way we set loadImage for every image and resolve only
+			 * one promise for global success, while every image gets to call
+			 * it’s success independetly of other images.
+			 */
 
 			var arr = [];
 			var dfd = $.Deferred();
@@ -162,13 +176,9 @@
 
 			images.each($.proxy( function ( index, element ) {
 
-				var load;
 				element = $(element);
-
-				load = this.aux.loadImage(element.data('src'));
-				arr.push(load);
-
-				load.always($.proxy(this.success, this, element));
+				arr.push(this.aux.loadImage(element.data('src')));
+				arr[arr.length-1].always($.proxy(this.success, this, element));
 
 			}, this));
 
