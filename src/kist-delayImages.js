@@ -57,38 +57,12 @@
 	};
 
 	/**
-	 * @param  {String|Object} method
-	 * @param  {Object|Function} options
+	 * @param  {Mixed} options
 	 *
 	 * @return {Object}
 	 */
-	function constructOptions ( method, options ) {
-
-		var o = {};
-
-		switch (typeof(method)) {
-			case 'string':
-				o.method = method;
-				break;
-			case 'object':
-				$.extend(o, method);
-				break;
-			default:
-				o.method = 'lazyload';
-				break;
-		}
-
-		switch (typeof(options)) {
-			case 'object':
-				$.extend(o, options);
-				break;
-			case 'function':
-				o.success = options;
-				break;
-		}
-
-		return o;
-
+	function constructOptions ( options ) {
+		return typeof(options) === 'object' ? options : {};
 	}
 
 	/**
@@ -97,36 +71,7 @@
 	 * @return {Function}
 	 */
 	function constructMethod ( options ) {
-
-		switch (options.method) {
-			case 'lazyload':
-				return Lazyload;
-			case 'postpone':
-				return Postpone;
-			default:
-				plugin.error('Unsupported method "' + options.method + '".');
-				break;
-		}
-
-	}
-
-	/**
-	 * @param  {String} options
-	 *
-	 * @return {Object}
-	 */
-	function cleanOptions ( options ) {
-
-		switch (options.method) {
-			case 'lazyload':
-				options = {};
-				break;
-			case 'postpone':
-				delete options.method;
-				break;
-		}
-
-		return options;
+		return options.method === 'postpone' ? Postpone : Lazyload;
 	}
 
 	/**
@@ -274,22 +219,19 @@
 		}
 	};
 
-	$.fn[plugin.name] = function ( method, options ) {
+	$.fn[plugin.name] = function ( options ) {
 
-		var Method;
-
-		if ( typeof(method) === 'string' && $.inArray(method, plugin.publicMethods) !== -1 ) {
+		if ( typeof(options) === 'string' && $.inArray(options, plugin.publicMethods) !== -1 ) {
 			return this.each(function () {
 				var pluginInstance = $.data(this, plugin.name);
 				if ( pluginInstance ) {
-					pluginInstance[method]();
+					pluginInstance[options]();
 				}
 			});
 		}
 
-		options = constructOptions(method, options);
-		Method = constructMethod(options);
-		options = cleanOptions(options);
+		options = constructOptions(options);
+		var Method = constructMethod(options);
 
 		/**
 		 * If there are multiple elements, first filter those which don’t

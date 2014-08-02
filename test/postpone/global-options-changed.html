@@ -21,9 +21,11 @@
 
 	<script>
 
-		$.kist.delayImages.postpone.defaults.debounce = 2000;
+		$.kist.delayImages.postpone.defaults.debounce = 3000;
 
-		$('img').delayImages('postpone');
+		$('img').delayImages({
+			method: 'postpone'
+		});
 
 	</script>
 

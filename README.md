@@ -10,26 +10,21 @@ bower install niksy/kist-delayImages
 
 ## API
 
-### `Element.delayImages([method], [options])`
+### `Element.delayImages([options])`
 
 Returns: `jQuery`
 
-#### method
+#### options
 
 Type: `String|Object`
 
-##### Method defined as `String`
-
-Type: `String`  
-Default: `lazyload`
-
-Image loading method to use. Possible values are `lazyload` and `postpone`.
+##### Options defined as `String`
 
 ###### destroy
 
 Destroy plugin instance.
 
-##### Method defined as `Object`
+##### Options defined as `Object`
 
 ###### method
 
@@ -73,21 +68,6 @@ Returns: ( [Images in viewport] )
 
 Callback to execute if there are images inside viewport.
 
-#### options
-
-Type: `Object|Function`
-
-##### Options defined as `Object`
-
-[See "Method defined as `Object`"](#method-defined-as-object).
-
-##### Options defined as `Function`
-
-Type: `Function`  
-Returns: ( [Images in viewport] )
-
-Callback to execute if there are images inside viewport.
-
 ### Global options
 
 #### `$.kist.delayImages.postpone.defaults`
@@ -108,39 +88,38 @@ Lazyload images.
 
 ```js
 $('img').delayImages();
+
+$('img').delayImages({
+	method: 'lazyload'
+});
 ```
 
 Postpone images with default options.
 
 ```js
-$('img').delayImages('postpone');
+$('img').delayImages({
+	method: 'postpone'
+});
 ```
 
 Callback when postponed images with default options are in viewport.
 
 ```js
-$('img').delayImages('postpone', function ( images ) {
-	console.log('Images are in viewport!');
+$('img').delayImages({
+	method: 'postpone',
+	success: function ( images ) {
+		console.log('Images are in viewport!');
+	}
 });
 ```
 
 Callback when postponed images with 300px threshold and 300ms debounce are in viewport.
 
 ```js
-$('img').delayImages('postpone', {
-	threshold: 300,
-	debounce: 300,
-	success: function ( images ) {
-		console.log('Images are in viewport!');
-	}
-});
-
 $('img').delayImages({
 	method: 'postpone',
 	threshold: 300,
 	debounce: 300,
-}, function ( images ) {
-	console.log('Images are in viewport!');
 });
 
 $('img').delayImages({
