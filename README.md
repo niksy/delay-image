@@ -90,7 +90,7 @@ Callback to execute if there are images inside viewport.
 
 ### Global options
 
-#### `$.delayImages.postpone.defaults`
+#### `$.kist.delayImages.postpone.defaults`
 
 Type: `Object`
 
