@@ -56,6 +56,9 @@
 		}
 	};
 
+	// @hattip https://github.com/niksy/modernizr-detects/blob/master/feature-detects/proxybrowser.js
+	var isProxyBrowser = (('Modernizr' in window) && Modernizr.proxybrowser) || (/Opera Mini|Silk/i.test(navigator.userAgent));
+
 	/**
 	 * @param  {Mixed} options
 	 *
@@ -71,7 +74,10 @@
 	 * @return {Function}
 	 */
 	function constructMethod ( options ) {
-		return options.method === 'postpone' ? Postpone : Lazyload;
+		if ( options.method === 'postpone' ) {
+			return isProxyBrowser ? Lazyload : Postpone;
+		}
+		return Lazyload;
 	}
 
 	/**
