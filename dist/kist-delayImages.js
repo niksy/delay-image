@@ -1,4 +1,4 @@
-/*! kist-delayImages 0.3.5 - Delay images via postpone or lazyload. | Author: Ivan Nikolić, 2014 | License: MIT */
+/*! kist-delayImages 0.3.6 - Delay images via postpone or lazyload. | Author: Ivan Nikolić, 2014 | License: MIT */
 ;(function ( $, window, document, undefined ) {
 
 	var plugin = {
@@ -82,6 +82,21 @@
 	}
 
 	/**
+	 * @this {Lazyload|Postpone}
+	 *
+	 * @param  {jQuery} images
+	 *
+	 * @return {}
+	 */
+	function onSuccess ( images ) {
+
+		if ( this.options.success ) {
+			this.options.success.call(this._element, images);
+		}
+
+	}
+
+	/**
 	 * @class
 	 *
 	 * @param {jQuery} element
@@ -96,11 +111,23 @@
 		aux.setup.call(this);
 		dom.setup.call(this);
 
-		this.parse(this.dom.el);
+		this.parse(this.dom.el)
+			.done($.proxy(this._init, this));
 
 	}
 
 	$.extend(Lazyload.prototype, {
+
+		/**
+		 * Run on plugin construction
+		 *
+		 * @param  {jQuery} images
+		 *
+		 * @return {}
+		 */
+		_init: function ( images ) {
+			onSuccess.call(this, images);
+		},
 
 		/**
 		 * @param  {jQuery} images
@@ -108,6 +135,10 @@
 		 * @return {Promise}
 		 */
 		parse: function ( images ) {
+
+			if ( this.options.start ) {
+				this.options.start.call(this._element, images);
+			}
 
 			/**
 			 * Why not load every image with one call to loadImage?
@@ -134,7 +165,9 @@
 
 			}, this));
 
-			$.when.apply(window, arr).always(dfd.resolve);
+			$.when.apply(window, arr).always(function () {
+				dfd.resolve(images);
+			});
 
 			return dfd.promise();
 
@@ -160,6 +193,11 @@
 		destroy: function () {
 			dom.destroy.call(this);
 			instance.destroy.call(this);
+		},
+
+		defaults: {
+			success: null,
+			start: null
 		}
 
 	});
@@ -170,6 +208,7 @@
 	function Postpone () {
 		Postpone._super.constructor.apply(this, arguments);
 
+		this.options = $.extend({}, Postpone._super.defaults, this.options);
 	}
 	function PostponeTemp () {}
 	PostponeTemp.prototype = Lazyload.prototype;
@@ -179,6 +218,8 @@
 
 	$.extend(Postpone.prototype, {
 
+		_init: function () {},
+
 		parse: function ( images ) {
 
 			images.inView({
@@ -186,21 +227,13 @@
 				debounce: this.options.debounce,
 				once: $.proxy(function ( result ) {
 
-					if ( this.options.start ) {
-						this.options.start.call(this._element, result);
-					}
-
 					Postpone._super.parse.call(this, result)
-						.done($.proxy(function () {
-
-							if ( this.options.success ) {
-								this.options.success.call(this._element, result);
-							}
-
-						}, this));
+						.done($.proxy(onSuccess, this));
 
 				}, this)
 			});
+
+			return $.Deferred().resolve().promise();
 
 		},
 
@@ -211,9 +244,7 @@
 
 		defaults: {
 			threshold: 0,
-			debounce: 300,
-			success: null,
-			start: null
+			debounce: 300
 		}
 
 	});
