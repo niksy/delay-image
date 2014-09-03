@@ -50,23 +50,18 @@ If [debounce plugin](https://github.com/niksy/jquery-throttle-debounce) is avail
 ###### success
 
 Type: `Function`  
-Returns: ( [Images in viewport] )
+Returns: ( [All lazyloaded images | Images in viewport] )
 
-Callback to execute if there are images inside viewport and after those images have been loaded.
+If called with lazyload method, callback will execute after all images have been loaded.  
+If called with postpone method, callback will execute if there are images inside viewport and after those images have been loaded.
 
 ###### start
 
 Type: `Function`  
-Returns: ( [Images in viewport] )
+Returns: ( [All lazyloaded images | Images in viewport] )
 
-Callback to execute if there are images inside viewport and before those image have been loaded.
-
-#### success
-
-Type: `Function`  
-Returns: ( [Images in viewport] )
-
-Callback to execute if there are images inside viewport.
+If called with lazyload method, callback will execute before all images have been loaded.  
+If called with postpone method, callback will execute if there are images inside viewport and before those images have been loaded.
 
 ### Global options
 
