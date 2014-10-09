@@ -1,6 +1,6 @@
 {
   "name": "kist-delayImages",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "Delay images via postpone or lazyload.",
   "authors": [
     "Ivan Nikolić"

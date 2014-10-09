@@ -1,4 +1,4 @@
-/*! kist-delayImages 0.3.6 - Delay images via postpone or lazyload. | Author: Ivan Nikolić, 2014 | License: MIT */
+/*! kist-delayImages 0.3.7 - Delay images via postpone or lazyload. | Author: Ivan Nikolić, 2014 | License: MIT */
 ;(function ( $, window, document, undefined ) {
 
 	var plugin = {
@@ -90,9 +90,7 @@
 	 */
 	function onSuccess ( images ) {
 
-		if ( this.options.success ) {
-			this.options.success.call(this._element, images);
-		}
+		this.options.success.call(this._element, images);
 
 	}
 
@@ -136,9 +134,7 @@
 		 */
 		parse: function ( images ) {
 
-			if ( this.options.start ) {
-				this.options.start.call(this._element, images);
-			}
+			this.options.start.call(this._element, images);
 
 			/**
 			 * Why not load every image with one call to loadImage?
@@ -196,19 +192,19 @@
 		},
 
 		defaults: {
-			success: null,
-			start: null
+			success: function () {},
+			start: function () {}
 		}
 
 	});
 
 	/**
 	 * @class
+	 * @extends {Lazyload}
 	 */
 	function Postpone () {
 		Postpone._super.constructor.apply(this, arguments);
 
-		this.options = $.extend({}, Postpone._super.defaults, this.options);
 	}
 	function PostponeTemp () {}
 	PostponeTemp.prototype = Lazyload.prototype;
@@ -242,10 +238,10 @@
 			this.dom.el.inView('destroy');
 		},
 
-		defaults: {
+		defaults: $.extend({}, Postpone._super.defaults, {
 			threshold: 0,
 			debounce: 300
-		}
+		})
 
 	});
 
