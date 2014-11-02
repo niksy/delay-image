@@ -16,8 +16,17 @@
 		isLoaded: 'is-loaded'
 	};
 	plugin.publicMethods = ['destroy'];
+	plugin.cb = function ( event, data ) {
+		if ( this.options[event] ) {
+			this.options[event].apply(this._element || this.element, data);
+		}
+		dom.common.document.trigger((plugin.name + event).toLowerCase(), data);
+	};
 
 	var dom = {
+		common: {
+			document: $(document)
+		},
 		setup: function () {
 			this.dom    = this.dom || {};
 			this.dom.el = $(this.element);
@@ -89,7 +98,7 @@
 	 */
 	function onSuccess ( images ) {
 
-		this.options.success.call(this._element, images);
+		plugin.cb.call(this, 'success', [images]);
 
 	}
 
@@ -133,7 +142,7 @@
 		 */
 		parse: function ( images ) {
 
-			this.options.start.call(this._element, images);
+			plugin.cb.call(this, 'start', [images]);
 
 			/**
 			 * Why not load every image with one call to loadImage?

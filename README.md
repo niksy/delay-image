@@ -47,21 +47,23 @@ Default: `300`
 
 If [debounce plugin](https://github.com/niksy/jquery-throttle-debounce) is available, time in milliseconds which will be used to debounce callback execution.
 
-###### success
-
-Type: `Function`  
-Returns: ( [All lazyloaded images | Images in viewport] )
-
-If called with lazyload method, callback will execute after all images have been loaded.  
-If called with postpone method, callback will execute if there are images inside viewport and after those images have been loaded.
-
 ###### start
 
 Type: `Function`  
-Returns: ( [All lazyloaded images | Images in viewport] )
+Arguments: ( [All lazyloaded images | Images in viewport] )  
+Event: `delayimagesstart`, triggered on `document`
 
 If called with lazyload method, callback will execute before all images have been loaded.  
 If called with postpone method, callback will execute if there are images inside viewport and before those images have been loaded.
+
+###### success
+
+Type: `Function`  
+Arguments: ( [All lazyloaded images | Images in viewport] )  
+Event: `delayimagessuccess`, triggered on `document`
+
+If called with lazyload method, callback will execute after all images have been loaded.  
+If called with postpone method, callback will execute if there are images inside viewport and after those images have been loaded.
 
 ### Global options
 
