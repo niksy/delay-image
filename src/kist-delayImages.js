@@ -256,6 +256,9 @@
 	$.kist = $.kist || {};
 
 	$.kist[plugin.name] = {
+		lazyload: {
+			defaults: Lazyload.prototype.defaults
+		},
 		postpone: {
 			defaults: Postpone.prototype.defaults
 		}

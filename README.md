@@ -67,11 +67,17 @@ If called with postpone method, callback will execute if there are images inside
 
 ### Global options
 
+#### `$.kist.delayImages.lazyload.defaults`
+
+Type: `Object`
+
+Change defaults for lazyload method.
+
 #### `$.kist.delayImages.postpone.defaults`
 
 Type: `Object`
 
-Change defaults for postpone method.
+Change defaults for postpone method. It will inherit properties from lazyload method defaults.
 
 ## Examples
 
