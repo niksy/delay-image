@@ -1,22 +1,52 @@
-# kist-delayImages
+# kist-delayimages
 
 Load images via [postpone](https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-postpone) or [lazyload](https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/ResourcePriorities/Overview.html#attr-lazyload) method.
 
 ## Installation
 
 ```sh
-bower install niksy/kist-delayImages
+npm install kist-delayimages --save
+
+bower install kist-delayimages --save
 ```
 
 ## API
 
-### `Element.delayImages([options])`
+Following API description assumes you use this module as jQuery plugin.
+
+### `$(Element).delayImages([options])`
 
 Returns: `jQuery`
 
 #### options
 
-Type: `String|Object`
+Type: `Object|String`
+
+##### Options defined as `Object`
+
+| Property | Type | Description | Default value |
+| --- | --- | --- | --- |
+| `method` | `String` | Image loading method to use. Possible values are `lazyload` and `postpone`. | `lazyload` |
+| `threshold` | `Number` | Value in pixels which will signal plugin to check for image presence earlier in document. | `0` |
+| `debounce` | `Number` | Time in milliseconds which will be used to debounce callback execution. | `300` |
+| `srcDataProp` | `String` | `data` property with image source. | `src` |
+| `altDataProp` | `String` | `data` property with image alt text. | `alt` |
+| `start` | `Function` | [Detailed description](#start) | `$.noop` |
+| `success` | `Function` | [Detailed description](#success) | `$.noop` |
+
+###### start
+
+If called with lazyload method, callback will execute before all images have been loaded.  
+If called with postpone method, callback will execute if there are images inside viewport and before those images have been loaded.
+
+Provides one argument: all lazyloaded images (if lazyload) or all images in viewport (if postpone). It also triggers `delayimagesstart` event on `document` with same arguments.
+
+###### success
+
+If called with lazyload method, callback will execute after all images have been loaded.  
+If called with postpone method, callback will execute if there are images inside viewport and after those images have been loaded.
+
+Provides one argument: all lazyloaded images (if lazyload) or all images in viewport (if postpone). It also triggers `delayimagessuccess` event on `document` with same arguments.
 
 ##### Options defined as `String`
 
@@ -24,56 +54,13 @@ Type: `String|Object`
 
 Destroy plugin instance.
 
-##### Options defined as `Object`
-
-###### method
-
-Type: `String`  
-Default: `lazyload`
-
-Image loading method to use. Possible values are `lazyload` and `postpone`.
-
-###### threshold
-
-Type: `Integer`  
-Default: `0`
-
-Value in pixels which will signal plugin to check for image presence earlier in document.
-
-###### debounce
-
-Type: `Integer`  
-Default: `300`
-
-If [debounce plugin](https://github.com/niksy/jquery-throttle-debounce) is available, time in milliseconds which will be used to debounce callback execution.
-
-###### start
-
-Type: `Function`  
-Arguments: ( [All lazyloaded images | Images in viewport] )  
-Event: `delayimagesstart`, triggered on `document`
-
-If called with lazyload method, callback will execute before all images have been loaded.  
-If called with postpone method, callback will execute if there are images inside viewport and before those images have been loaded.
-
-###### success
-
-Type: `Function`  
-Arguments: ( [All lazyloaded images | Images in viewport] )  
-Event: `delayimagessuccess`, triggered on `document`
-
-If called with lazyload method, callback will execute after all images have been loaded.  
-If called with postpone method, callback will execute if there are images inside viewport and after those images have been loaded.
-
-### Global options
-
-#### `$.kist.delayImages.lazyload.defaults`
+### `$.fn.delayImages.defaults.lazyload`
 
 Type: `Object`
 
 Change defaults for lazyload method.
 
-#### `$.kist.delayImages.postpone.defaults`
+### `$.fn.delayImages.defaults.postpone`
 
 Type: `Object`
 
@@ -142,6 +129,14 @@ Destroy plugin instance.
 
 ```js
 $('img').delayImages('destroy');
+```
+
+### AMD and global
+
+```js
+define(['kist-delayimages'], cb);
+
+window.$.fn.delayImages;
 ```
 
 ## Caveats

@@ -17,11 +17,3 @@ $('img').delayImages({
 
 // API calls
 $('img').delayImages('destroy');
-
-// Defaults
-$.delayImages.postpone.defaults = {
-	threshold: 300,
-	debounce: 300,
-	success: null,
-	start: null
-};
