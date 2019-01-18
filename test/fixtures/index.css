@@ -1,0 +1,9 @@
+body {
+	padding: 1200px 0;
+}
+
+.Test-image {
+	display: block;
+	min-width: 100%;
+	min-height: 300px;
+}
