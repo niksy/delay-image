@@ -1,6 +1,6 @@
 {
   "name": "delay-image",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Delay image load until it’s in viewport.",
   "main": "index.cjs.js",
   "module": "index.esm.js",
