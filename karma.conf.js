@@ -4,16 +4,20 @@ const path = require('path');
 
 let config;
 
-const local = typeof process.env.CI === 'undefined' || process.env.CI === 'false';
-const port = 9001;
+const local =
+	typeof process.env.CI === 'undefined' || process.env.CI === 'false';
+const port = process.env.SERVICE_PORT;
 
-if ( local ) {
+if (local) {
 	config = {
-		browsers: ['Chrome'],
+		browsers: ['Chrome']
 	};
 } else {
 	config = {
+		hostname: 'bs-local.com',
 		browserStack: {
+			username: process.env.BROWSER_STACK_USERNAME,
+			accessKey: process.env.BROWSER_STACK_ACCESS_KEY,
 			startTunnel: true,
 			project: 'delay-image',
 			name: 'Automated (Karma)',
@@ -47,21 +51,26 @@ if ( local ) {
 				project: 'delay-image',
 				build: 'Automated (Karma)',
 				name: 'IE9'
-			},
+			}
 		},
 		browsers: ['BS-Chrome', 'BS-Firefox', 'BS-IE9']
 	};
 }
 
-module.exports = function ( baseConfig ) {
-
-	baseConfig.set(Object.assign({
+module.exports = function(baseConfig) {
+	baseConfig.set({
 		basePath: '',
 		frameworks: ['mocha', 'fixture'],
 		files: [
 			'test/**/*.css',
 			'test/**/*.html',
-			{ pattern: 'test/**/*.jpg', watched: false, included: false, served: true, nocache: false },
+			{
+				pattern: 'test/**/*.jpg',
+				watched: false,
+				included: false,
+				served: true,
+				nocache: false
+			},
 			'test/**/.webpack.js'
 		],
 		exclude: [],
@@ -91,20 +100,24 @@ module.exports = function ( baseConfig ) {
 					{
 						test: /\.js$/,
 						exclude: /node_modules/,
-						use: [{
-							loader: 'babel-loader'
-						}]
+						use: [
+							{
+								loader: 'babel-loader'
+							}
+						]
 					},
 					{
 						test: /\.js$/,
 						exclude: /(node_modules|test)/,
 						enforce: 'post',
-						use: [{
-							loader: 'istanbul-instrumenter-loader',
-							options: {
-								esModules: true
+						use: [
+							{
+								loader: 'istanbul-instrumenter-loader',
+								options: {
+									esModules: true
+								}
 							}
-						}]
+						]
 					}
 				]
 			}
@@ -120,7 +133,7 @@ module.exports = function ( baseConfig ) {
 			}
 		},
 		singleRun: true,
-		concurrency: Infinity
-	}, config));
-
+		concurrency: Infinity,
+		...config
+	});
 };
