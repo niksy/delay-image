@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "element-within-viewport": "^2.0.0",
-    "image-promise": "^6.0.0"
+    "image-promise": "6.0.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",

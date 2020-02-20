@@ -6,6 +6,7 @@
 
 -   Abstract scroll and resize event handling, so events could be wrapped with
     more functionality (e.g. throttle)
+-   Lock `image-promise` to `6.0.2` since we need IE9 support
 
 ### Added
 
