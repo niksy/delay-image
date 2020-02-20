@@ -46,14 +46,14 @@ Image element.
 
 Type: `Object`
 
-| Property      | Type       | Default value                                   | Description                                                                                                                           |
-| ------------- | ---------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `threshold`   | `Number`   | `0`                                             | Positive value in pixels which will signal plugin to check for image presence earlier in document.                                    |
-| `debounce`    | `Number`   | `300`                                           | Time in milliseconds which will be used to debounce callback execution.                                                               |
-| `imageSource` | `String`   | `element.getAttribute('data-src')`              | Image URL to load.                                                                                                                    |
-| `onEnter`     | `Function` | `() => {}`                                      | Callback to execute if image is within viewport (useful for loader initialization).                                                   |
-| `onSuccess`   | `Function` | `( element ) => { element.src = imageSource; }` | Callback to execute if image has been successfully loaded. **If you define this callback, you need to add `src` attribute yourself.** |
-| `onFail`      | `Function` | `() => { ... }`                                 | Callback to execute if image has failed to load.                                                                                      |
+| Property              | Type       | Default value                                 | Description                                                                                                                                                                                                                                          |
+| --------------------- | ---------- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `threshold`           | `number`   | `0`                                           | Positive value in pixels which will signal plugin to check for image presence earlier in document.                                                                                                                                                   |
+| `scrollResizeHandler` | `Function` | `300`                                         | Window scroll and resize event handler. Useful if you want to use [throttle or debounce methods](https://github.com/niksy/element-within-viewport#throttle-debounce-scroll-resize) on those events. Should return new handler (original or wrapped). |
+| `imageSource`         | `string`   | `element.getAttribute('data-src')`            | Image URL to load.                                                                                                                                                                                                                                   |
+| `onEnter`             | `Function` | `() => {}`                                    | Callback to execute if image is within viewport (useful for loader initialization).                                                                                                                                                                  |
+| `onSuccess`           | `Function` | `(element) => { element.src = imageSource; }` | Callback to execute if image has been successfully loaded. **If you define this callback, you need to add `src` attribute yourself.**                                                                                                                |
+| `onFail`              | `Function` | `() => { ... }`                               | Callback to execute if image has failed to load.                                                                                                                                                                                                     |
 
 ### instance.destroy()
 

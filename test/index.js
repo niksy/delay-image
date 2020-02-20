@@ -1,7 +1,10 @@
 import assert from 'assert';
 import url from 'url';
 import sinon from 'sinon';
+import { debounce } from 'throttle-debounce';
 import fn from '../index';
+
+const scrollResizeHandler = (handler) => debounce(300, handler);
 
 function scrollAndWait(offset, wait) {
 	return new Promise((resolve) => {
@@ -34,6 +37,7 @@ it('should handle default behavior', async function() {
 	const spy = sinon.spy();
 
 	const instance = fn(element, {
+		scrollResizeHandler: scrollResizeHandler,
 		onEnter: spy
 	});
 
@@ -63,6 +67,7 @@ it('should handle success callback', async function() {
 	const spy = sinon.spy();
 
 	const instance = fn(element, {
+		scrollResizeHandler: scrollResizeHandler,
 		onEnter: spy,
 		onSuccess: spy
 	});
@@ -89,6 +94,7 @@ it('should handle fail callback', async function() {
 	const spy = sinon.spy();
 
 	const instance = fn(element, {
+		scrollResizeHandler: scrollResizeHandler,
 		onEnter: spy,
 		onFail: spy
 	});

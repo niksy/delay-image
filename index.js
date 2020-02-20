@@ -1,10 +1,12 @@
 import elementWithinViewport from 'element-within-viewport';
 import loadImage from 'image-promise';
 
+const defaultScrollResizeHandler = (handler) => handler;
+
 export default (element, options = {}) => {
 	const {
 		threshold = 0,
-		debounce = 300,
+		scrollResizeHandler = defaultScrollResizeHandler,
 		imageSource = element.getAttribute('data-src'),
 		onEnter = (node) => {},
 		onSuccess = (node) => {
@@ -15,7 +17,7 @@ export default (element, options = {}) => {
 
 	const instance = elementWithinViewport(element, {
 		threshold: threshold,
-		debounce: debounce,
+		scrollResizeHandler: scrollResizeHandler,
 		once: true,
 		onEnter: () => {
 			onEnter(element);
