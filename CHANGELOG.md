@@ -2,6 +2,14 @@
 
 ## [Unreleased][]
 
+### Changed
+
+-   Update dependencies
+
+### Removed
+
+-   **Breaking**: Drop IE support, supported browser is Edge 15+
+
 ## [2.0.0][] - 2020-02-20
 
 ### Changed
@@ -24,7 +32,9 @@
 
 -   Refactored implementation
 
-[unreleased]: https://github.com/niksy/delay-image/compare/v1.0.0...HEAD
+<!-- prettier-ignore-start -->
+
 [1.0.0]: https://github.com/niksy/delay-image/tree/v1.0.0
-[unreleased]: https://github.com/niksy/delay-image/compare/v2.0.0...HEAD
 [2.0.0]: https://github.com/niksy/delay-image/tree/v2.0.0
+
+<!-- prettier-ignore-end -->
