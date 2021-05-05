@@ -6,11 +6,15 @@ import function_ from '../index';
 
 const scrollResizeHandler = (handler) => debounce(300, handler);
 
-function scrollAndWait(offset, wait) {
+function wait(time) {
 	return new Promise((resolve) => {
-		window.scrollTo(0, offset);
-		setTimeout(resolve, wait);
+		setTimeout(resolve, time);
 	});
+}
+
+function scrollAndWait(offset, time) {
+	window.scrollTo(0, offset);
+	return wait(time);
 }
 
 function getNodeOffset(node) {
@@ -52,6 +56,8 @@ it('should handle default behavior', async function () {
 	await scrollAndWait(0, defaultTimeout);
 
 	instance.destroy();
+
+	await wait(2000);
 
 	const dataSource = element.getAttribute('data-src');
 	const { pathname: source } = url.parse(element.src);
@@ -110,6 +116,8 @@ it('should handle fail callback', async function () {
 	await scrollAndWait(0, defaultTimeout);
 
 	instance.destroy();
+
+	await wait(2000);
 
 	const dataSource = element.getAttribute('data-src');
 	const { pathname: source } = url.parse(element.src);
