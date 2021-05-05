@@ -2,6 +2,8 @@
 
 ## [Unreleased][]
 
+## [3.0.0][] - 2021-05-05
+
 ### Changed
 
 -   Update dependencies
@@ -39,3 +41,6 @@
 [2.0.0]: https://github.com/niksy/delay-image/tree/v2.0.0
 
 <!-- prettier-ignore-end -->
+
+[unreleased]: https://github.com/niksy/delay-image/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/niksy/delay-image/tree/v3.0.0
