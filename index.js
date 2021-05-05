@@ -7,7 +7,7 @@ export default (element, options = {}) => {
 	const {
 		threshold = 0,
 		scrollResizeHandler = defaultScrollResizeHandler,
-		imageSource = element.getAttribute('data-src'),
+		imageSource = element.dataset.src,
 		onEnter = (node) => {},
 		onSuccess = (node) => {
 			node.src = imageSource;

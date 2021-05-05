@@ -59,7 +59,7 @@ it('should handle default behavior', async function () {
 
 	await wait(2000);
 
-	const dataSource = element.getAttribute('data-src');
+	const dataSource = element.dataset.src;
 	const { pathname: source } = url.parse(element.src);
 
 	assert.equal(spy.callCount, 1);
@@ -119,7 +119,7 @@ it('should handle fail callback', async function () {
 
 	await wait(2000);
 
-	const dataSource = element.getAttribute('data-src');
+	const dataSource = element.dataset.src;
 	const { pathname: source } = url.parse(element.src);
 
 	assert.equal(spy.callCount, 2);
