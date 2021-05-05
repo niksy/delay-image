@@ -37,8 +37,8 @@
     "module-check": "node -e 'require(\"delay-image\");' && node --input-type=module -e 'import \"delay-image\";'"
   },
   "dependencies": {
-    "element-within-viewport": "^2.0.0",
-    "image-promise": "6.0.2"
+    "element-within-viewport": "^3.0.1",
+    "image-promise": "^7.0.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
