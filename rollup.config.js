@@ -8,12 +8,6 @@ module.exports = {
 	input: 'index.js',
 	output: [
 		{
-			file: 'cjs/index.js',
-			format: 'cjs',
-			exports: 'auto',
-			sourcemap: true
-		},
-		{
 			file: 'esm/index.js',
 			format: 'esm',
 			sourcemap: true
@@ -25,10 +19,7 @@ module.exports = {
 				name: 'package-type',
 				async writeBundle(output) {
 					let prefix, type;
-					if (output.file.includes('cjs/')) {
-						prefix = 'cjs';
-						type = 'commonjs';
-					} else if (output.file.includes('esm/')) {
+					if (output.file.includes('esm/')) {
 						prefix = 'esm';
 						type = 'module';
 					}

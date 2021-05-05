@@ -7,18 +7,16 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "import": "./esm/index.js",
-      "require": "./cjs/index.js"
+      "import": "./esm/index.js"
     },
     "./package.json": "./package.json"
   },
-  "main": "cjs/index.js",
+  "main": "esm/index.js",
   "module": "esm/index.js",
   "directories": {
     "test": "test"
   },
   "files": [
-    "cjs/",
     "esm/",
     "CHANGELOG.md",
     "LICENSE.md",
@@ -34,7 +32,7 @@
     "test:automated": "BABEL_ENV=test karma start",
     "test:automated:watch": "npm run test:automated -- --auto-watch --no-single-run",
     "version": "version-changelog CHANGELOG.md && changelog-verify CHANGELOG.md && git add CHANGELOG.md",
-    "module-check": "node -e 'require(\"delay-image\");' && node --input-type=module -e 'import \"delay-image\";'"
+    "module-check": "node --input-type=module -e 'import \"delay-image\";'"
   },
   "dependencies": {
     "element-within-viewport": "^3.0.1",

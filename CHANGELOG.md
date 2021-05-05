@@ -5,6 +5,7 @@
 ### Changed
 
 -   Update dependencies
+-   Make module ESM only
 
 ### Removed
 
