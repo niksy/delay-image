@@ -62,7 +62,8 @@ Destroy instance.
 ## Browser support
 
 Tested in Edge 15, Chrome 72 and Firefox 65, and should work in all modern
-browsers.
+browsers
+([support based on Browserslist configuration](https://browserslist.dev/?q=bGFzdCAzIG1ham9yIHZlcnNpb25zLCBzaW5jZSAyMDE5LCBlZGdlID49IDE1LCBub3QgaWUgPiAw)).
 
 ## Test
 
@@ -78,6 +79,6 @@ MIT © [Ivan Nikolić](http://ivannikolic.com)
 [ci]: https://travis-ci.com/niksy/delay-image
 [ci-img]: https://travis-ci.com/niksy/delay-image.svg?branch=master
 [browserstack]: https://www.browserstack.com/
-[browserstack-img]: https://www.browserstack.com/automate/badge.svg?badge_key=Mko4TDFSTXgxUVpsTTF0TGozMWVzLzV5clB3ZXQxZm1yc1NYdE5KdG5BVT0tLWdJRy9DQktNSmozSjlsSXE0RjkvTGc9PQ==--589d59d7ed51a7d2bf3f198127c7ef149a2ad1a2
+[browserstack-img]: https://www.browserstack.com/automate/badge.svg?badge_key=MGV1ZTVGN0tFSHU5alpRUW54SFZwcnh1aDZrUHVOc3AySDdUenYyQkdHYz0tLW9vUjVjeG4rbU14YjNpbXpYU2tlV0E9PQ==--2683e49bc19f3e9bf2dbd4c65fa7a3a8e6809318
 
 <!-- prettier-ignore-end -->
