@@ -2,7 +2,7 @@ import assert from 'assert';
 import url from 'url';
 import sinon from 'sinon';
 import { debounce } from 'throttle-debounce';
-import fn from '../index';
+import function_ from '../index';
 
 const scrollResizeHandler = (handler) => debounce(300, handler);
 
@@ -22,21 +22,21 @@ function getNodeOffset(node) {
 
 const defaultTimeout = 300 + 100;
 
-before(function() {
+before(function () {
 	window.fixture.load('/test/fixtures/index.html');
 });
 
-after(function() {
+after(function () {
 	window.fixture.cleanup();
 });
 
-it('should handle default behavior', async function() {
-	this.timeout(20000);
+it('should handle default behavior', async function () {
+	this.timeout(20_000);
 
 	const element = document.querySelector('.Test-image--success');
 	const spy = sinon.spy();
 
-	const instance = fn(element, {
+	const instance = function_(element, {
 		scrollResizeHandler: scrollResizeHandler,
 		onEnter: spy
 	});
@@ -60,13 +60,13 @@ it('should handle default behavior', async function() {
 	assert.equal(source, dataSource);
 });
 
-it('should handle success callback', async function() {
-	this.timeout(20000);
+it('should handle success callback', async function () {
+	this.timeout(20_000);
 
 	const element = document.querySelector('.Test-image--success');
 	const spy = sinon.spy();
 
-	const instance = fn(element, {
+	const instance = function_(element, {
 		scrollResizeHandler: scrollResizeHandler,
 		onEnter: spy,
 		onSuccess: spy
@@ -87,13 +87,13 @@ it('should handle success callback', async function() {
 	assert.equal(spy.callCount, 2);
 });
 
-it('should handle fail callback', async function() {
-	this.timeout(20000);
+it('should handle fail callback', async function () {
+	this.timeout(20_000);
 
 	const element = document.querySelector('.Test-image--fail');
 	const spy = sinon.spy();
 
-	const instance = fn(element, {
+	const instance = function_(element, {
 		scrollResizeHandler: scrollResizeHandler,
 		onEnter: spy,
 		onFail: spy

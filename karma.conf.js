@@ -1,12 +1,22 @@
 'use strict';
 
 const path = require('path');
+const fs = require('fs');
+const {
+	assert: assertModulePath,
+	url: urlModulePath
+} = require('node-libs-browser');
 
 let config;
 
-const local =
-	typeof process.env.CI === 'undefined' || process.env.CI === 'false';
-const port = process.env.SERVICE_PORT;
+const isCI =
+	typeof process.env.CI !== 'undefined' && process.env.CI !== 'false';
+const isPR =
+	typeof process.env.TRAVIS_PULL_REQUEST !== 'undefined' &&
+	process.env.TRAVIS_PULL_REQUEST !== 'false';
+const local = !isCI || (isCI && isPR);
+
+const port = 0;
 
 if (local) {
 	config = {
@@ -27,6 +37,7 @@ if (local) {
 			'BS-Chrome': {
 				base: 'BrowserStack',
 				browser: 'Chrome',
+				'browser_version': '72',
 				os: 'Windows',
 				'os_version': '7',
 				project: 'delay-image',
@@ -36,28 +47,29 @@ if (local) {
 			'BS-Firefox': {
 				base: 'BrowserStack',
 				browser: 'Firefox',
+				'browser_version': '65',
 				os: 'Windows',
 				'os_version': '7',
 				project: 'delay-image',
 				build: 'Automated (Karma)',
 				name: 'Firefox'
 			},
-			'BS-IE9': {
+			'BS-Edge15': {
 				base: 'BrowserStack',
-				browser: 'IE',
-				'browser_version': '9',
+				browser: 'Edge',
+				'browser_version': '15',
 				os: 'Windows',
-				'os_version': '7',
+				'os_version': '10',
 				project: 'delay-image',
 				build: 'Automated (Karma)',
-				name: 'IE9'
+				name: 'Edge15'
 			}
 		},
-		browsers: ['BS-Chrome', 'BS-Firefox', 'BS-IE9']
+		browsers: ['BS-Chrome', 'BS-Firefox', 'BS-Edge15']
 	};
 }
 
-module.exports = function(baseConfig) {
+module.exports = function (baseConfig) {
 	baseConfig.set({
 		basePath: '',
 		frameworks: ['mocha', 'fixture'],
@@ -94,7 +106,13 @@ module.exports = function(baseConfig) {
 		browserNoActivityTimeout: 60000,
 		webpack: {
 			mode: 'none',
-			devtool: 'cheap-module-inline-source-map',
+			devtool: 'inline-source-map',
+			resolve: {
+				fallback: {
+					assert: assertModulePath,
+					url: urlModulePath
+				}
+			},
 			module: {
 				rules: [
 					{
@@ -127,9 +145,9 @@ module.exports = function(baseConfig) {
 			fixWebpackSourcePaths: true,
 			reports: ['html', 'text'],
 			thresholds: {
-				global: {
-					statements: 80
-				}
+				global: JSON.parse(
+					fs.readFileSync(path.join(__dirname, '.nycrc'), 'utf8')
+				)
 			}
 		},
 		singleRun: true,

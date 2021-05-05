@@ -61,7 +61,8 @@ Destroy instance.
 
 ## Browser support
 
-Tested in IE9+ and all modern browsers.
+Tested in Edge 15, Chrome 72 and Firefox 65, and should work in all modern
+browsers.
 
 ## Test
 
